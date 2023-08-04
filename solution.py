@@ -54,29 +54,33 @@ class RequestDeletion:
 
         user_datas = self.browser.find_elements(By.CLASS_NAME, 'serp-card')
         i = 0
-        previous_visit = None
+        visited = []
 
         # Loop until we visit all similar persons data
         while i < len(user_datas):
 
             try:
-                if user_datas[i].get_attribute('href') != previous_visit:   # Duplicate check
-                    previous_visit = user_datas[i].get_attribute('href')
+                if user_datas[i].get_attribute('href') not in visited:   # Duplicate check
+                    visited.append(user_datas[i].get_attribute('href'))
 
                     # Navigate to current person details page
                     user_datas[i].click()
-                    sleep(5)
+                    sleep(3)
 
                     # Extract data using extract method
                     self.extract_data()
 
                     # Backs browser navigation history by 1 step
                     self.browser.back()
+                    self.browser.refresh()
+                    sleep(3)
                     user_datas = self.browser.find_elements(By.CLASS_NAME, 'serp-card')
+
             except:
                 break
-            i += 1
 
+            i += 1
+        print("counter end, i is", i)
         sleep(50)   # waits 50s before closing window.
         self.browser.close()
 
@@ -90,7 +94,10 @@ class RequestDeletion:
         name = self.browser.find_element(By.XPATH, f'//*[@id="{path_id}"]/div/div[1]/div[1]/'
                                          f'div[1]/div[1]/div[1]/div/div/h1').text.strip()
 
-        land_line = self.browser.find_element(By.XPATH, '//*[@id="landline"]/div[2]/a').text.strip()
+        try:
+            land_line = self.browser.find_element(By.XPATH, '//*[@id="landline"]/div[2]/a').text.strip()
+        except:
+            land_line = '(585) 589-5719'
 
         age = self.browser.find_element(By.XPATH, f'//*[@id="{path_id}"]/div/div[1]/div[1]/'
                                                   f'div[1]/div[1]/div[2]/div[2]/div[1]/div[2]').text.strip()
@@ -118,6 +125,7 @@ class RequestDeletion:
         # Opening support page form
         self.browser.get('https://support.whitepages.com/hc/en-us/requests/new?ticket_form_id=580868')
         self.wait(By.NAME, 'request[anonymous_requester_email]')
+        sleep(2)
 
         # Searching input areas and inserting inputs
         email_input = self.browser.find_element(By.NAME, 'request[anonymous_requester_email]')
@@ -141,8 +149,9 @@ class RequestDeletion:
 
         print(".")
 
-        reason_for_remove = self.browser.find_elements(By.CLASS_NAME, 'nesty-input')
-        reason_for_remove[1].click()
+        reason_for_remove = self.browser.find_element(By.XPATH, '//*[@id="new_request"]/div[8]/a')
+        reason_for_remove.click()
+        sleep(1)
         actions = ActionChains(self.browser)
         actions.send_keys(Keys.ARROW_DOWN).perform()
         actions.send_keys(Keys.ARROW_DOWN).perform()
@@ -158,7 +167,7 @@ class RequestDeletion:
         description_input.clear()
         description_input.send_keys('Please remove my data')
 
-        sleep(2)
+        sleep(1)
 
         # Submitting removal request
         submit = self.browser.find_element(By.NAME, 'commit')
@@ -166,7 +175,7 @@ class RequestDeletion:
 
         print('Successfully submitted data for : ', data)
 
-        sleep(5)
+        sleep(2)
 
         # Backs browser navigation history by 1 step
         self.browser.back()
