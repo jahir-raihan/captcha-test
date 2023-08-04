@@ -2,7 +2,7 @@
 
 **The main motive of this script was to automate the process of removing request  a persons data from whitepages.com**
 
-## Thought
+# Thought
 
 **Basically we use selenium for web automation, but some anti bots are not happy with it.
 So in order to run our script successfully, we need something that can bypass anti-bot like cloud-flare check.**
