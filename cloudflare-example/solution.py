@@ -41,7 +41,7 @@ class RequestDeletion:
         name_input.send_keys(name)
         location_input.send_keys(location)
 
-        # Search
+        
         submit_button.click()
         sleep(5)
 
